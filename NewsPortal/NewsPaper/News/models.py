@@ -13,11 +13,9 @@ class Author(models.Model):
         comments_rating = Comment.objects.filter(user=self.user).aggregate(cr=Coalesce(Sum('rating'), 0))['cr']
         posts_comment_rating = Comment.objects.filter(post__author=self).aggregate(pcr=Coalesce(Sum('rating'), 0))['pcr']
 
-        print(posts_rating)
-        print('_______________')
-        print(comments_rating)
-        print('_______________')
-        print(posts_comment_rating)
+        print(f'Рейтинг статьи автора - {posts_rating}')
+        print(f'Рейтинг всех комментариев автора - {comments_rating}')
+        print(f'Рейтинг всех комментариев к статьям автора - {posts_comment_rating}')
 
         self.rating = posts_rating * 3 + comments_rating + posts_comment_rating
         self.save()
@@ -75,7 +73,3 @@ class Comment(models.Model):
     def dislike(self):
         self.rating -= 1
         self.save()
-
-#Author.objects.order_by('-rating').values('user__username', 'rating').first() -- Лучший пользователь
-#Post.objects.order_by('-rating').values('time_of_text_creation', 'author', 'rating', 'article_title').first() -- Лучший пост
-#Post.objects.order_by('-rating').first().preview() -- Превью к лучшему посту
